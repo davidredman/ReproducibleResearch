@@ -100,7 +100,16 @@ summary(a)
 ```
 
 ```r
-head(a)
+#Number of "NA" rows in the data set
+nrow(a[!complete.cases(a),])
+```
+
+```
+## [1] 2304
+```
+
+```r
+head(a,3)
 ```
 
 ```
@@ -108,20 +117,14 @@ head(a)
 ## 1    NA 2012-10-01        0
 ## 2    NA 2012-10-01        5
 ## 3    NA 2012-10-01       10
-## 4    NA 2012-10-01       15
-## 5    NA 2012-10-01       20
-## 6    NA 2012-10-01       25
 ```
 
 ```r
-tail(a)
+tail(a,3)
 ```
 
 ```
 ##       steps       date interval
-## 17563    NA 2012-11-30     2330
-## 17564    NA 2012-11-30     2335
-## 17565    NA 2012-11-30     2340
 ## 17566    NA 2012-11-30     2345
 ## 17567    NA 2012-11-30     2350
 ## 17568    NA 2012-11-30     2355
@@ -176,7 +179,6 @@ lapply(a, class)
 ```
 
 
-
 Assignment Question 1:
 
 
@@ -194,13 +196,31 @@ Assignment Question 1:
 ```r
 asteps <- tapply(a$steps, a$date, sum, na.rm= FALSE, simplify=TRUE)
 asteps <- (asteps[!is.na(asteps)])
-hist(asteps,col="red", breaks=25)
+summary(asteps)
 ```
 
-![](PA1_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10765   10766   13294   21194
+```
 
 
-Calculate the mean of the total number of steps per day
+    -  The Mean is 10766
+    
+    -  The Median is 10765
+    
+    - Total Number of steps taken 21194
+
+
+
+```r
+hist(asteps,main = paste ("Total number taken per Day "), col="red", breaks=20, xlab = "Number of Steps")
+```
+
+![](PA1_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+
+-  Calculate the mean of the total number of steps per day
 
 
 ```r
@@ -212,7 +232,9 @@ summary(asteps)
 ##      41    8841   10765   10766   13294   21194
 ```
 
-THe mean is 10766 and the median is 10765
+```r
+# The mean is 10766 and the median is 10765
+```
 
 
 
@@ -235,11 +257,26 @@ with(avgsteps,
      plot(interval,
           avg,
           type="l",
-          xlab="5-minute intervals",
-          ylab="average steps in the interval across all days"))    
+          main = "5 minute Intervals, Average Number of Steps",
+          xlab="Intervals",
+          ylab="Number of Steps")) 
 ```
 
-![](PA1_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
+```r
+filter(avgsteps,avg==max(avg)) 
+```
+
+```
+##   interval      avg
+## 1      835 206.1698
+```
+
+-  Max Steps in the 5 minute interval is 835
+
+-  Average across all the days: 206.1695
+      
  
  
 Imputing missing values
@@ -258,6 +295,15 @@ summary(a$steps)
 ##    0.00    0.00    0.00   37.38   12.00  806.00    2304
 ```
 
+```r
+#Number of "NA" rows in the data set
+nrow(a[!complete.cases(a),])
+```
+
+```
+## [1] 2304
+```
+
         2. Fill in all of the missing values in the dataset. For example, you could use the mean/median for that day,
         or the mean for that 5-minute interval, etc.
         
@@ -268,7 +314,7 @@ summary(a$steps)
 ```r
 av <- a
 avsteps <- is.na(asteps)
-av_avg <-tapply(a$steps, a$interval, mean, na.rm= FALSE, simplify=TRUE)
+av_avg <-tapply(a$steps, a$interval, mean, na.rm= TRUE, simplify=TRUE)
 av$steps[avsteps] <- av_avg[as.character(av$interval[avsteps])]
 ```
 
@@ -289,7 +335,11 @@ hist(csteps,col="red", breaks=25, xlab="Daily Steps", ylab="Freq",
      main="Daily with Missing Data")    
 ```
 
-![](PA1_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+![](PA1_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+```r
+#   -imputing the missing date lower the average number of steps,  center bar in histogram
+```
 
 
 
@@ -320,8 +370,8 @@ xyplot(steps ~ interval | factor(a$weekend),
        data=csteps_wk )
 ```
 
-![](PA1_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+![](PA1_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
-
+There is a high activity of steps during the week, however, the weekend shorter period indicates that activity was more. 
 
 
