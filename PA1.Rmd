@@ -49,9 +49,10 @@ inspect the data set structure, summary, head, and tail
 
 str(a)
 summary(a)
-head(a)
-tail(a)
-
+#Number of "NA" rows in the data set
+nrow(a[!complete.cases(a),])
+head(a,3)
+tail(a,3)
 ```
 
 Preparation of the data for analysis
@@ -64,7 +65,6 @@ str(a)
 names(a)
 lapply(a, class)
 ```
-
 
 
 Assignment Question 1:
@@ -80,23 +80,39 @@ Assignment Question 1:
 
         4. Calculate the mean of the total number of steps per day
 
-```{r}
+```{r, echo = TRUE }
+
 asteps <- tapply(a$steps, a$date, sum, na.rm= FALSE, simplify=TRUE)
 asteps <- (asteps[!is.na(asteps)])
-hist(asteps,col="red", breaks=25)
+summary(asteps)
+
+
 
 ```
 
 
-Calculate the mean of the total number of steps per day
+    -  The Mean is 10766
+    
+    -  The Median is 10765
+    
+    - Total Number of steps taken 21194
+
+
+```{r,ehco =TRUE}
+
+hist(asteps,main = paste ("Total number taken per Day "), col="red", breaks=20, xlab = "Number of Steps")
+
+```
+
+
+-  Calculate the mean of the total number of steps per day
 
 ```{r}
 
 summary(asteps)
 
+# The mean is 10766 and the median is 10765
 ```
-
-THe mean is 10766 and the median is 10765
 
 
 
@@ -118,11 +134,17 @@ with(avgsteps,
      plot(interval,
           avg,
           type="l",
-          xlab="5-minute intervals",
-          ylab="average steps in the interval across all days"))    
+          main = "5 minute Intervals, Average Number of Steps",
+          xlab="Intervals",
+          ylab="Number of Steps")) 
 
-    
-```      
+filter(avgsteps,avg==max(avg)) 
+```
+
+-  Max Steps in the 5 minute interval is 835
+
+-  Average across all the days: 206.1695
+      
  
  
 Imputing missing values
@@ -133,6 +155,9 @@ Note: There are a number of days/intervals where there are missing values (coded
         NAs
 ```{r}
 summary(a$steps)
+
+#Number of "NA" rows in the data set
+nrow(a[!complete.cases(a),])
 ```
 
         2. Fill in all of the missing values in the dataset. For example, you could use the mean/median for that day,
@@ -144,7 +169,7 @@ summary(a$steps)
 ```{r}
 av <- a
 avsteps <- is.na(asteps)
-av_avg <-tapply(a$steps, a$interval, mean, na.rm= FALSE, simplify=TRUE)
+av_avg <-tapply(a$steps, a$interval, mean, na.rm= TRUE, simplify=TRUE)
 av$steps[avsteps] <- av_avg[as.character(av$interval[avsteps])]
 ```
 
@@ -163,6 +188,8 @@ csteps <- tapply(av$steps, av$date, sum, na.rm=FALSE, simplify=T)
 hist(csteps,col="red", breaks=25, xlab="Daily Steps", ylab="Freq",
      main="Daily with Missing Data")    
 
+
+#   -imputing the missing date lower the average number of steps,  center bar in histogram
 ```
 
 
@@ -196,6 +223,6 @@ xyplot(steps ~ interval | factor(a$weekend),
 
 ```
 
-
+There is a high activity of steps during the week, however, the weekend shorter period indicates that activity was more. 
 
 
